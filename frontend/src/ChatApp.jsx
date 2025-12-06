@@ -1,4 +1,4 @@
-// frontend/src/ChatApp.jsx
+
 import React, { useState, useRef, useEffect } from "react";
 import MessageBubble from "./components/MessageBubble";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,21 +27,21 @@ export default function ChatApp() {
     setIsTyping(true);
 
     try {
-      const res = await fetch("http://localhost:8000/reply", {
+      // <<< REPLACED URL: use your Render backend URL here >>>
+      const res = await fetch("https://simplechatbot-chnk.onrender.com/reply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ q: raw })
       });
       const data = await res.json();
 
-    //   await new Promise((r) =>
-    //     setTimeout(r, 300 + Math.min(700, Math.random() * 700))
-    //   );
+      // remove artificial delay to speed responses
+      // await new Promise((r) => setTimeout(r, 300 + Math.min(700, Math.random() * 700)));
 
       setIsTyping(false);
       setMessages((m) => [
         ...m,
-        { id: idRef.current++, from: "bot", text: data.answer }
+        { id: idRef.current++, from: "bot", text: data.answer || "No answer returned." }
       ]);
     } catch (err) {
       setIsTyping(false);
@@ -49,6 +49,7 @@ export default function ChatApp() {
         ...m,
         { id: idRef.current++, from: "bot", text: "Server unreachable — check backend." }
       ]);
+      console.error("Reply fetch error:", err);
     }
   };
 
@@ -67,7 +68,6 @@ export default function ChatApp() {
         transition={{ duration: 0.45 }}
         className="w-full max-w-3xl rounded-2xl shadow-2xl bg-gradient-to-b from-neutral-900/70 to-neutral-950/60 border border-neutral-800 backdrop-blur-md overflow-hidden"
       >
-
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
           <div className="flex items-center gap-4">
@@ -76,7 +76,6 @@ export default function ChatApp() {
             </div>
             <div>
               <div className="text-lg font-semibold">ReyMini</div>
-              {/* Subtitle removed */}
             </div>
           </div>
 
@@ -111,21 +110,9 @@ export default function ChatApp() {
                 <div className="rounded-2xl p-3 bg-neutral-800/80 text-neutral-100 max-w-md">
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">
-                      <motion.span
-                        animate={{ y: [0, -6, 0] }}
-                        transition={{ repeat: Infinity, duration: 0.8 }}
-                        className="w-2 h-2 rounded-full bg-neutral-300 inline-block"
-                      />
-                      <motion.span
-                        animate={{ y: [0, -8, 0] }}
-                        transition={{ repeat: Infinity, duration: 0.8, delay: 0.12 }}
-                        className="w-2 h-2 rounded-full bg-neutral-300 inline-block"
-                      />
-                      <motion.span
-                        animate={{ y: [0, -6, 0] }}
-                        transition={{ repeat: Infinity, duration: 0.8, delay: 0.24 }}
-                        className="w-2 h-2 rounded-full bg-neutral-300 inline-block"
-                      />
+                      <motion.span animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-2 h-2 rounded-full bg-neutral-300 inline-block" />
+                      <motion.span animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 0.8, delay: 0.12 }} className="w-2 h-2 rounded-full bg-neutral-300 inline-block" />
+                      <motion.span animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 0.8, delay: 0.24 }} className="w-2 h-2 rounded-full bg-neutral-300 inline-block" />
                     </div>
                     <div className="text-xs text-neutral-300">ReyMini is typing…</div>
                   </div>
